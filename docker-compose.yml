@@ -1,0 +1,16 @@
+services:
+  messengerdb:
+    image: postgres
+    
+  messenger.api:
+    image: ${DOCKER_REGISTRY-}messengerapi
+    build: 
+      context: .
+      dockerfile: services/messenger/Messenger.API/Dockerfile
+  
+  portainer:
+    image: portainer/portainer-ce
+
+volumes:
+  pgdata:
+  portainer_data:

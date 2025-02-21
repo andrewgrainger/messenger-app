@@ -1,0 +1,38 @@
+services:
+  messengerdb:
+    container_name: messengerdb
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgrespw
+      - POSTGRES_DB=MessengerDb
+    restart: always
+    ports: 
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  messenger.api:
+    container_name: messenger.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ConnectionStrings__DefaultConnection=Server=messengerdb;Port=5432;Database=MessengerDb;User Id=postgres;Password=postgrespw;"
+    depends_on:
+      messengerdb:
+        condition: service_healthy
+    ports:
+      - "8000:8080"
+
+  portainer:
+    container_name: portainer
+    restart: always
+    ports: 
+      - "8080:8000"
+      - "9090:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock      
+      - portainer_data:/data
