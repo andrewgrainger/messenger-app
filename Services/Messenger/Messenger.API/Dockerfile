@@ -9,7 +9,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Services/Messenger/Messenger.API/Messenger.API.csproj", "Services/Messenger/Messenger.API/"]
 COPY ["Services/Messenger/Messenger.Application/Messenger.Application.csproj", "Services/Messenger/Messenger.Application/"]
-COPY ["Services/Messenger/Messenger.Core/Messenger.Core.csproj", "Services/Messenger/Messenger.Core/"]
+COPY ["Services/Messenger/Messenger.Domain/Messenger.Domain.csproj", "Services/Messenger/Messenger.Domain/"]
 COPY ["Services/Messenger/Messenger.Infrastructure/Messenger.Infrastructure.csproj", "Services/Messenger/Messenger.Infrastructure/"]
 RUN dotnet restore "./Services/Messenger/Messenger.API/Messenger.API.csproj"
 COPY . .

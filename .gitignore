@@ -414,3 +414,4 @@ Services/Messenger/Messenger.Infrastructure/obj/Debug/net8.0/refint/Messenger.In
 .vscode/settings.json
 .vscode/tasks.json
 obj/docker-compose.dcproj.EntityFrameworkCore.targets
+/Services/Messenger/Messenger.API/Messenger.API.http
