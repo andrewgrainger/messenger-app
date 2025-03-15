@@ -27,6 +27,15 @@ services:
     ports:
       - "8000:8080"
 
+  ocelot.gateway:
+    container_name: ocelot.gateway
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development  
+    depends_on:
+      - messenger.api
+    ports:
+      - "8010:8080"
+
   portainer:
     container_name: portainer
     restart: always

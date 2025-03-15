@@ -2,6 +2,9 @@ using Messenger.API.Extensions;
 using Messenger.Application.Extensions;
 using Messenger.Infrastructure.Data;
 using Messenger.Infrastructure.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,10 +37,28 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Messenger.API", Version = "v1" }); 
 });
 
+var userPolicy = new AuthorizationPolicyBuilder()
+    .RequireAuthenticatedUser()
+    .Build();
+
+builder.Services.AddControllers(config =>   
+    {
+        config.Filters.Add(new AuthorizeFilter(userPolicy));
+    });
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options => {
+        options.Authority = "https://localhost:9009";
+        options.Audience = "Messenger";
+    });
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("Read", policy => policy.RequireClaim("scope", "messenger.read"))
+    .AddPolicy("Write", policy => policy.RequireClaim("scope", "messenger.write"));
+
 var app = builder.Build();
 
-app.MigrateDatabase<ChatDbContext>((context, services) => 
-{
+app.MigrateDatabase<ChatDbContext>((context, services) => {
 });
 
 if (app.Environment.IsDevelopment())
@@ -48,6 +69,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("CorsPolicy");
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
