@@ -1,0 +1,24 @@
+services:
+  roomdb:
+    image: postgres
+  identitydb:
+    image: postgres
+    
+  room.api:
+    image: ${DOCKER_REGISTRY-}roomapi
+    build: 
+      context: .
+      dockerfile: ../API/Services/Room/Room.API/Dockerfile
+  
+  ocelot.gateway:
+    image: ${DOCKER_REGISTRY-}ocetlotgateway
+    build:
+      context: .
+      dockerfile: ../API/Gateways/Ocelot.Gateway/Dockerfile
+
+  portainer:
+    image: portainer/portainer-ce
+
+volumes:
+  pgdata:
+  portainer_data:

@@ -1,0 +1,64 @@
+services:
+  roomdb:
+    container_name: roomdb
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgrespw
+      - POSTGRES_DB=RoomDb
+    restart: always
+    ports: 
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  identitydb:
+    container_name: identitydb
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgrespw
+      - POSTGRES_DB=IdentityDb
+    restart: always
+    ports: 
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  room.api:
+    container_name: room.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ConnectionStrings__DefaultConnection=Server=RoomDb;Port=5432;Database=RoomDb;User Id=postgres;Password=postgrespw;"
+    depends_on:
+      roomdb:
+        condition: service_healthy
+    ports:
+      - "8000:8080"
+
+  ocelot.gateway:
+    container_name: ocelot.gateway
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development  
+    depends_on:
+      - room.api
+    ports:
+      - "8010:8080"
+
+  portainer:
+    container_name: portainer
+    restart: always
+    ports: 
+      - "8080:8000"
+      - "9090:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock      
+      - portainer_data:/data
